@@ -1,5 +1,7 @@
 package parserdev.parse;
 
+import parserdev.model.JsonObject;
+
 import java.util.ArrayList;
 
 public class JsonParser {
@@ -66,7 +68,7 @@ public class JsonParser {
     public void parseJson() {
 
         if (consumeIf("{")) {
-            parseObject();
+            System.out.println(parseObject());
             eat("}");   // closing object;
         }
 
@@ -74,9 +76,9 @@ public class JsonParser {
     }
 
 
-    private void parseObject() {
+    private Object parseObject() {
         if (consumeIf("age")) {
-
+            var jsonObject = new JsonObject();
             var jsonKey  = key;
             eat(":");
             switch (currentToken) {
@@ -85,11 +87,14 @@ public class JsonParser {
                 }
                 case "10" -> {
                     value = currentToken;
+                    jsonObject.put(key, value);
+                    value = jsonObject;
                     advance();
+                    return jsonObject;
                 }
             }
         }
-
+        return null;
     }
     private void parseArray() {
         // TODO: 7/13/21
@@ -100,8 +105,6 @@ public class JsonParser {
     public static void main(String[] args) {
         var jParser = new JsonParser();
         jParser.parseJson();
-        System.out.println(jParser.key);
-        System.out.println(jParser.value);
 
 //        var prsObjectJson = jParser.parseJson();
     }
