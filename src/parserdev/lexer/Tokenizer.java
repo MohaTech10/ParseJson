@@ -5,7 +5,7 @@ import java.util.ArrayList;
 interface GenericLexer {
     boolean advance();
     void lex();
-    void lexIdentifier();
+    void lexString();
     void lexNumber();
 
 }
@@ -37,14 +37,17 @@ public class Tokenizer implements GenericLexer {
     @Override
     public void lex() {
         while (currentChar != '\0') {
-            if (currentChar == '{') {
+            if (Character.isWhitespace(currentChar)) {
+                advance();
+            }
+            else if (currentChar == '{') {
                 tokens.add(new Token(Token.TokenType.OPEN_BRACE, "{"));
                 advance();
             } else if (currentChar == '}') {
                 tokens.add(new Token(Token.TokenType.CLOSE_BRACE, "}"));
                 advance();
             } else if (Character.isJavaIdentifierStart(currentChar)) {
-                lexIdentifier();
+                lexString();
             } else if (Character.isDigit(currentChar)) {
                 lexNumber();
             } else if (currentChar == ':') {
@@ -63,13 +66,16 @@ public class Tokenizer implements GenericLexer {
     }
 
     @Override
-    public void lexIdentifier() {
+    public void lexString() {
         final var buffer = new StringBuffer();
         while (Character.isJavaIdentifierPart(currentChar) && currentChar != '\0') {
             buffer.append(currentChar);
             advance();
         }
-        tokens.add(new Token(Token.TokenType.ID, buffer.toString()));
+        if (buffer.toString().equals("true") || buffer.toString().equals("false"))
+            tokens.add(new Token(Token.TokenType.BOOLEAN, buffer.toString()));
+        else
+            tokens.add(new Token(Token.TokenType.STRING, buffer.toString()));
     }
 
     @Override
@@ -80,6 +86,11 @@ public class Tokenizer implements GenericLexer {
             advance();
         }
         tokens.add(new Token(Token.TokenType.NUMBER, buffer.toString()));
+    }
+
+
+    public ArrayList<Token> getTokens() {
+        return tokens;
     }
 
     public static void main(String[] args) {

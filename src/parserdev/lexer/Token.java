@@ -2,7 +2,7 @@ package parserdev.lexer;
 
 final public class Token {
 
-    enum TokenType {
+    public enum TokenType {
         ID, STRING, BOOLEAN, COLON, COMMA, NUMBER, OPEN_BRACE, CLOSE_BRACE, OPEN_SQUARE, CLOSE_SQUARE;
     }
 
