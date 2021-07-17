@@ -1,41 +1,33 @@
 package parserdev.parse;
 
-import java.util.ArrayList;
+import parserdev.lexer.Token;
+import parserdev.lexer.Tokenizer;
+import parserdev.model.JsonObject;
 
 public class JsonParser {
 
     // Fixme: Assumption we have Lexer , Don't forget to implement one later;
 
-    final ArrayList<String> tokens;
-    int idx = 0;
-    String currentToken;
 
-    String key = "";
+    Tokenizer lexer;
+    int idx = 0;
+    Token skipped, currentToken;
+
+//    String key = "";
     Object value;
-    public JsonParser() {
-        tokens = new ArrayList<>();
-        /*
-            {
-                age: 10
-            }
-         */
-        tokens.add("{");
-        tokens.add("age");
-        tokens.add(":");
-        tokens.add("10");
-        tokens.add("}");
+    public JsonParser(String src) {
+        lexer = new Tokenizer(src);
         advance();
     }
 
     // Todo: rename it
-    boolean check(String token) {
-        return token.equals(currentToken);
+    boolean check(Token.TokenType tokenType) {
+        return tokenType == currentToken.getTokenType();
     }
 
     // it is optional token advancement;  var x : int = 10;  var y = 10;
-    boolean consumeIf(String token) {
-        if (check(token)) {
-            key = currentToken;  // bad design
+    boolean consumeIf(Token.TokenType tokenType) {
+        if (check(tokenType)) {
             advance();
             return true;
         }
@@ -43,52 +35,67 @@ public class JsonParser {
     }
 
     // Eat otherwise parser error;
-    boolean eat(String token) {
-        if (check(token)) {
+    boolean eat(Token.TokenType tokenType) {
+        if (check(tokenType)) {
             advance();
             return true;
         } else {
             // TODO: 7/13/21 Throw parser error;
-            System.err.println("Expected: " + token + " but Got " + currentToken);
+            System.err.println("Expected: " + tokenType + " but Got " + currentToken);
         }
         return false;
     }
 
     boolean advance() {
         /*lexer.nextToken()*/
-        if (idx < tokens.size()) {
-            currentToken = tokens.get(idx++);
+        if (idx < lexer.getTokens().size()) {
+            skipped = currentToken;
+            currentToken = lexer.getTokens().get(idx++);
             return true;
         }
         return false;
     }
-
-    public void parseJson() {
-
-        if (consumeIf("{")) {
+    public Object parseJson() {
+        if (consumeIf(Token.TokenType.OPEN_BRACE)) {
             parseObject();
-            eat("}");   // closing object;
         }
-
-        // we shoud never reach here;
+        return value;
     }
 
-
     private void parseObject() {
-        if (consumeIf("age")) {
+        if (check(Token.TokenType.STRING)) {
+            var jsonObject = new JsonObject();
+            do {
+                eat(Token.TokenType.STRING);
+                var key = skipped.getStringValue();
+                eat(Token.TokenType.COLON);    // { address: {} for example; }
+                switch (currentToken.getTokenType()) {
+                    case OPEN_BRACE -> {
+                        // TODO: 7/17/21 Recursive
+                    }
 
-            var jsonKey  = key;
-            eat(":");
-            switch (currentToken) {
-                case "{" -> {
-                    // parse object recursively
+                    // FIXME: 7/17/21 Refactor value to parseValue
+                    case NUMBER -> {
+                        value = Integer.parseInt(currentToken.getStringValue());
+                        jsonObject.put(key, value);
+                        value = jsonObject;
+                        advance();
+                    } case BOOLEAN -> {
+                        value = Boolean.parseBoolean(currentToken.getStringValue());
+                        jsonObject.put(key, value);
+                        value = jsonObject;
+                        advance();
+                    }
+                    case STRING -> {
+                        value = currentToken.getStringValue();
+                        jsonObject.put(key, value);
+                        value = jsonObject;
+                        advance();
+                    }
                 }
-                case "10" -> {
-                    value = currentToken;
-                    advance();
-                }
-            }
+            } while (consumeIf(Token.TokenType.COMMA));
         }
+        eat(Token.TokenType.CLOSE_BRACE);   // closing object;
 
     }
     private void parseArray() {
@@ -96,13 +103,14 @@ public class JsonParser {
 
     }
 
+    private void parseValue() {
+        // TODO: 7/17/21
+    }
+
 
     public static void main(String[] args) {
-        var jParser = new JsonParser();
-        jParser.parseJson();
-        System.out.println(jParser.key);
-        System.out.println(jParser.value);
-
-//        var prsObjectJson = jParser.parseJson();
+        var jParser = new JsonParser("{ userRepos: 40, foo: true }");
+        var jsonOb = jParser.parseJson();
+        System.out.println(jsonOb);
     }
 }

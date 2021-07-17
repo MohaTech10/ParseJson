@@ -1,0 +1,12 @@
+{
+    userRepos : 40,     mapper = [user: 40,
+    object :
+    {
+         value: 7,
+         address :
+         {
+            really: true
+         }
+    }
+    isLogged : 1
+}
