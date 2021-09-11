@@ -39,12 +39,24 @@ public class Tokenizer implements GenericLexer {
         while (currentChar != '\0') {
             if (Character.isWhitespace(currentChar)) {
                 advance();
+            } else if (currentChar == '"') { // start of string
+                advance(); // "l
+                while (currentChar != '"' && currentChar != '\0')
+                    advance();
+                if (currentChar == '"') {
+                    tokens.add(new Token(Token.TokenType.STRING, ""));
+                    advance();
+                } else {
+                    lexerError = true;
+                    break;
+                }
+
             }
             else if (currentChar == '{') {
-                tokens.add(new Token(Token.TokenType.OPEN_BRACE, "{"));
+                tokens.add(new Token(Token.TokenType.R_BRACE, "{"));
                 advance();
             } else if (currentChar == '}') {
-                tokens.add(new Token(Token.TokenType.CLOSE_BRACE, "}"));
+                tokens.add(new Token(Token.TokenType.L_BRACE, "}"));
                 advance();
             } else if (Character.isJavaIdentifierStart(currentChar)) {
                 lexString();
@@ -75,7 +87,7 @@ public class Tokenizer implements GenericLexer {
         if (buffer.toString().equals("true") || buffer.toString().equals("false"))
             tokens.add(new Token(Token.TokenType.BOOLEAN, buffer.toString()));
         else
-            tokens.add(new Token(Token.TokenType.STRING, buffer.toString()));
+            tokens.add(new Token(Token.TokenType.STRING, buffer.toString()));  // FIXME
     }
 
     @Override
@@ -94,7 +106,7 @@ public class Tokenizer implements GenericLexer {
     }
 
     public static void main(String[] args) {
-        var lexer = new Tokenizer("{dev:10}");
+        var lexer = new Tokenizer("{\"bool");
         System.out.println(lexer.tokens);
     }
 }
