@@ -1,4 +1,4 @@
-package parserdev.ast;
+package code.ast;
 
 import java.util.List;
 public class ArrayNode extends ValueNode implements JsonRoot {

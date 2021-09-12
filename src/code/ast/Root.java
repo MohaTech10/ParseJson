@@ -1,4 +1,4 @@
-package parserdev.ast;
+package code.ast;
 
 // RootClass Declaration
 public class Root {

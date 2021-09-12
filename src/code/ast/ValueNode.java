@@ -1,4 +1,4 @@
-package parserdev.ast;
+package code.ast;
 
 public abstract class ValueNode {
     public enum ValueKind {

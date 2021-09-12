@@ -1,0 +1,7 @@
+{
+    "key": "value",
+    "key2": true,
+    "key_object": {
+        "nested_key": true
+    }
+}

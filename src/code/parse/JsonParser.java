@@ -1,8 +1,8 @@
-package parserdev.parse;
+package code.parse;
 
-import parserdev.ast.*;
-import parserdev.lexer.Token;
-import parserdev.lexer.Tokenizer;
+import code.ast.*;
+import code.lexer.Token;
+import code.lexer.Tokenizer;
 
 public class JsonParser {
 
@@ -102,8 +102,7 @@ public class JsonParser {
 
 
     public static void main(String[] args) {
-        var parser = new JsonParser("{\"key1\": true}");
-        // {"key1": true, "value": 1, "obj": {"k3": 1} }
+        var parser = new JsonParser("/Users/engmoht/IdeaProjects/ParseJson/src/code/example/json_example.text");
         System.out.println(parser.parseRoot());
     }
 }

@@ -1,4 +1,4 @@
-package parserdev.lexer;
+package code.lexer;
 
 import java.util.ArrayList;
 
@@ -14,11 +14,11 @@ public class Tokenizer implements GenericLexer {
     private int idx;
     private ArrayList<Token> tokens;
     private char currentChar;
-    private final String src;
+    private  String src;
     private boolean lexerError;
 
-    public Tokenizer(String src) {
-        this.src = src;
+    public Tokenizer(String path) {
+        src = BufferReader.read(path);
         tokens = new ArrayList<>();
         advance();
         lex();

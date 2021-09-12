@@ -1,4 +1,4 @@
-package parserdev.ast;
+package code.ast;
 
 public class StringNode extends ValueNode {
     String value;

@@ -1,4 +1,4 @@
-package parserdev.lexer;
+package code.lexer;
 
 final public class Token {
 
