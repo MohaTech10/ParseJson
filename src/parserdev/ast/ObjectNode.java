@@ -1,7 +1,7 @@
 package parserdev.ast;
 
-import java.util.Map;
-
+import java.util.ArrayList;
+import java.util.List;
 
 // This construct introduces a new class declaration;
 // So when Visiting we check currentNode is object? create class and loop through its elements, as propertis, and so on;
@@ -9,10 +9,20 @@ import java.util.Map;
 public class ObjectNode extends ValueNode implements JsonRoot {
 
     /*ValueNode parent?*/
-    Map<PropertyNode, ValueNode> elements;
+
+    List<PropertyNode> elements;
 
     public ObjectNode() {
         super(ValueKind.OBJECT);
+        elements = new ArrayList<>();
     }
 
+    public boolean push(PropertyNode pNode) { return elements.add(pNode); }
+
+    @Override
+    public String toString() {
+        return "ObjectNode{" +
+                "elements=" + elements +
+                '}';
+    }
 }

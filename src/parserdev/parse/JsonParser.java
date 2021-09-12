@@ -1,8 +1,6 @@
 package parserdev.parse;
 
-import parserdev.ast.ArrayNode;
-import parserdev.ast.ObjectNode;
-import parserdev.ast.Root;
+import parserdev.ast.*;
 import parserdev.lexer.Token;
 import parserdev.lexer.Tokenizer;
 
@@ -56,64 +54,45 @@ public class JsonParser {
     }
     public Root parseRoot() {
         Root root = null;
-        if (consumeIf(Token.TokenType.R_BRACE)) {
-            root = new Root(parseObjRoot());  // TODO: See if parseObject is sufficient
+        if (consumeIf(Token.TokenType.L_BRACE)) {
+            if (check(Token.TokenType.R_BRACE)) {  // Case1: Empty json feed
+                // Empty
+            } else {  // Have single or more jsonData
+                root = new Root(parseObject());  // TODO: See if parseObject is sufficient
+                eat(Token.TokenType.R_BRACE);
+            }
         } else if (consumeIf(Token.TokenType.L_BRACKET)) {
-            root = new Root(parseArrayRoot());  // TODO: See if parseArray is sufficient
+            root = new Root(parseArray());  // TODO: See if parseArray is sufficient
         }
         return root; // FIXME: check & see empty classRoot, OR null , invalid start. etc..
     }
 
-    private ObjectNode parseObjRoot() {
-        return null;   // TODO: 9/11/21
+    private ObjectNode parseObject() {
+        var object = new ObjectNode();
+        while (true) {
+            eat(Token.TokenType.STRING);   // must have a key first in json
+            var key = skipped.getStringValue();  // get the key
+            eat(Token.TokenType.COLON); // TODO: Wire colon to key, As we have a key in object must have colon & Value;
+            switch (currentToken.getTokenType()) {
+                case STRING -> object.push(new PropertyNode(key, new StringNode(currentToken.getStringValue())));
+                case BOOLEAN -> object.push(new PropertyNode(key, new BoolNode(currentToken.getStringValue())));
+                case L_BRACE -> {
+                    advance();
+                    object.push(new PropertyNode(key, parseObject()));
+                    eat(Token.TokenType.R_BRACE);
+                }
+                default -> System.out.println("ValueError: Unexpected value type. Valid Value: (Boolean, String, Number, Object, Array)");
+            }
+            advance();
+            if (!consumeIf(Token.TokenType.COMMA)) break;
+
+        }
+        return object;
     }
 
-    private ArrayNode parseArrayRoot() {
-        // TODO: 9/11/21
-        return null;
-    }
-
-    // This will parse the object as object{} element not a root 'i.e' has a parent
-    private void parseObject() {
-//        if (check(Token.TokenType.STRING)) {
-//            var jsonObject = new JsonObject();
-//            do {
-//                eat(Token.TokenType.STRING);
-//                var key = skipped.getStringValue();
-//                eat(Token.TokenType.COLON);    // { address: {} for example; }
-//                switch (currentToken.getTokenType()) {
-//                    case R_BRACE -> {
-//                        // TODO: 7/17/21 Recursive
-//                    }
-//
-//                    // FIXME: 7/17/21 Refactor value to parseValue
-//                    case NUMBER -> {
-//                        value = Integer.parseInt(currentToken.getStringValue());
-//                        jsonObject.put(key, value);
-//                        value = jsonObject;
-//                        advance();
-//                    } case BOOLEAN -> {
-//                        value = Boolean.parseBoolean(currentToken.getStringValue());
-//                        jsonObject.put(key, value);
-//                        value = jsonObject;
-//                        advance();
-//                    }
-//                    case STRING -> {
-//                        value = currentToken.getStringValue();
-//                        jsonObject.put(key, value);
-//                        value = jsonObject;
-//                        advance();
-//                    }
-//                }
-//            } while (consumeIf(Token.TokenType.COMMA));
-//        }
-//        eat(Token.TokenType.L_BRACE);   // closing object;
-
-    }
-
-    // This will parse the array as[] element not a root 'i.e' has a parent
-    private void parseArray() {
+    private ArrayNode parseArray() {
         // TODO: 7/13/21
+        return null;
 
     }
 
@@ -123,6 +102,8 @@ public class JsonParser {
 
 
     public static void main(String[] args) {
-
+        var parser = new JsonParser("{\"key1\": true}");
+        // {"key1": true, "value": 1, "obj": {"k3": 1} }
+        System.out.println(parser.parseRoot());
     }
 }

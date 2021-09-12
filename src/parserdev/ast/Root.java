@@ -15,4 +15,11 @@ public class Root {
             rootKind = RootKind.ARRAY;
         else rootKind = RootKind.OBJECT;
     }
+
+    @Override
+    public String toString() {
+        return "Root{" +
+                "jsonRoot=" + jsonRoot +
+                '}';
+    }
 }

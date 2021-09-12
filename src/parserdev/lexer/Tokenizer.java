@@ -41,10 +41,13 @@ public class Tokenizer implements GenericLexer {
                 advance();
             } else if (currentChar == '"') { // start of string
                 advance(); // "l
-                while (currentChar != '"' && currentChar != '\0')
+                var buffer = new StringBuilder();
+                while (currentChar != '"' && currentChar != '\0') {
+                    buffer.append(currentChar);
                     advance();
+                }
                 if (currentChar == '"') {
-                    tokens.add(new Token(Token.TokenType.STRING, ""));
+                    tokens.add(new Token(Token.TokenType.STRING, buffer.toString()));
                     advance();
                 } else {
                     lexerError = true;
@@ -53,10 +56,10 @@ public class Tokenizer implements GenericLexer {
 
             }
             else if (currentChar == '{') {
-                tokens.add(new Token(Token.TokenType.R_BRACE, "{"));
+                tokens.add(new Token(Token.TokenType.L_BRACE, "{"));
                 advance();
             } else if (currentChar == '}') {
-                tokens.add(new Token(Token.TokenType.L_BRACE, "}"));
+                tokens.add(new Token(Token.TokenType.R_BRACE, "}"));
                 advance();
             } else if (Character.isJavaIdentifierStart(currentChar)) {
                 lexString();
