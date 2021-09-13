@@ -86,7 +86,7 @@ public class JsonParser {
             var key = skipped.getStringValue();  // get the key
             eat(Token.TokenType.COLON); // TODO: Wire colon to key, As we have a key in object must have colon & Value;
             switch (currentToken.getTokenType()) {
-                case STRING, BOOLEAN, NUMBER -> {
+                case STRING, BOOLEAN, NUMBER, NULL -> {
                     var value =  ValueFactory.create(currentToken.getStringValue());
                     object.push(new PropertyNode(key, value));
                 }
@@ -126,7 +126,7 @@ public class JsonParser {
 
 
     public static void main(String[] args) {
-        var parser = new JsonParser("/Users/engmoht/IdeaProjects/ParseJson/src/code/example/json_example.text");
+        var parser = new JsonParser("/Users/engmoht/IdeaProjects/ParseJson/src/code/example/simpler_json.text");
         System.out.println(parser.parseRoot());
     }
 }
