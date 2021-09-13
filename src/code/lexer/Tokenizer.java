@@ -1,5 +1,7 @@
 package code.lexer;
 
+import code.ast.Utility;
+
 import java.util.ArrayList;
 
 interface GenericLexer {
@@ -87,10 +89,10 @@ public class Tokenizer implements GenericLexer {
             buffer.append(currentChar);
             advance();
         }
-        if (buffer.toString().equals("true") || buffer.toString().equals("false"))
+        if (Utility.isBoolString(buffer.toString()))
             tokens.add(new Token(Token.TokenType.BOOLEAN, buffer.toString()));
-        else
-            tokens.add(new Token(Token.TokenType.STRING, buffer.toString()));  // FIXME
+        else if (Utility.isNullString(buffer.toString()))
+            tokens.add(new Token(Token.TokenType.NULL, buffer.toString()));  // FIXME
     }
 
     @Override

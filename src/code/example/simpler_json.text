@@ -1,0 +1,9 @@
+{
+    "nullable": true,
+    "nullable_str": null,
+    "numerical": 1,
+    "object": {
+        "nested_key": "string-value"
+    },
+    "empty_object": {}
+}

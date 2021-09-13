@@ -3,7 +3,7 @@ package code.lexer;
 final public class Token {
 
     public enum TokenType {
-        ID, STRING, BOOLEAN, COLON, COMMA, NUMBER, R_BRACE, L_BRACE, L_BRACKET, R_BRACKET;
+        ID, STRING, BOOLEAN, COLON, COMMA, NUMBER, R_BRACE, L_BRACE, L_BRACKET, R_BRACKET, NULL;
     }
 
     private final TokenType tokenType;

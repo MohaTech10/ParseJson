@@ -62,12 +62,8 @@ public class JsonParser {
     public Root parseRoot() {
         Root root = null;
         if (consumeIf(Token.TokenType.L_BRACE)) {
-            if (check(Token.TokenType.R_BRACE)) {  // Case1: Empty json feed
-                // Empty
-            } else {  // Have single or more jsonData
                 root = new Root(parseObject());
                 eat(Token.TokenType.R_BRACE);
-            }
         } else if (consumeIf(Token.TokenType.L_BRACKET)) {
             if (check(Token.TokenType.R_BRACKET)) {  // Case1: Empty json feed
                 // Empty
@@ -79,14 +75,18 @@ public class JsonParser {
         return root; // FIXME: check & see empty classRoot, OR null , invalid start. etc..
     }
 
+    // if object is null then empty one
     private ObjectNode parseObject() {
+
+        if (check(Token.TokenType.R_BRACE)) { return null; } // Empty case
         var object = new ObjectNode();
+
         while (true) {
             eat(Token.TokenType.STRING);   // must have a key first in json
             var key = skipped.getStringValue();  // get the key
             eat(Token.TokenType.COLON); // TODO: Wire colon to key, As we have a key in object must have colon & Value;
             switch (currentToken.getTokenType()) {
-                case STRING, BOOLEAN, NUMBER -> {
+                case STRING, BOOLEAN, NUMBER, NULL -> {
                     var value =  ValueFactory.create(currentToken.getStringValue());
                     object.push(new PropertyNode(key, value));
                 }
@@ -126,7 +126,7 @@ public class JsonParser {
 
 
     public static void main(String[] args) {
-        var parser = new JsonParser("/Users/engmoht/IdeaProjects/ParseJson/src/code/example/json_example.text");
+        var parser = new JsonParser("/Users/engmoht/IdeaProjects/ParseJson/src/code/example/simpler_json.text");
         System.out.println(parser.parseRoot());
     }
 }
