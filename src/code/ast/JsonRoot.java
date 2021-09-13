@@ -1,6 +1,6 @@
 package code.ast;
 
 
-public interface JsonRoot {
-
+public interface JsonRoot<T> {
+    boolean push(T element);
 }

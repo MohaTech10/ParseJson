@@ -6,12 +6,13 @@ public abstract class ValueNode {
         NUMBER,
         BOOLEAN,
         OBJECT,
-        ARRAY
+        ARRAY,
+        NULL
     }
 
     ValueKind kind;
 
-    public ValueNode(ValueKind kind) {
+    protected ValueNode(ValueKind kind) {
         this.kind = kind;
     }
 }

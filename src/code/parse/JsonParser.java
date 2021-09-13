@@ -42,6 +42,13 @@ public class JsonParser {
         }
         return false;
     }
+    boolean eatNoAdvance(Token.TokenType tokenType) {
+        if (check(tokenType)) {
+            return true;
+        }
+        System.err.println("Expected: " + tokenType + " but Got " + currentToken);
+        return false;
+    }
 
     boolean advance() {
         /*lexer.nextToken()*/
@@ -58,11 +65,16 @@ public class JsonParser {
             if (check(Token.TokenType.R_BRACE)) {  // Case1: Empty json feed
                 // Empty
             } else {  // Have single or more jsonData
-                root = new Root(parseObject());  // TODO: See if parseObject is sufficient
+                root = new Root(parseObject());
                 eat(Token.TokenType.R_BRACE);
             }
         } else if (consumeIf(Token.TokenType.L_BRACKET)) {
-            root = new Root(parseArray());  // TODO: See if parseArray is sufficient
+            if (check(Token.TokenType.R_BRACKET)) {  // Case1: Empty json feed
+                // Empty
+            } else {  // Have single or more jsonArrayData
+                root = new Root(parseArray());
+                eat(Token.TokenType.R_BRACKET);
+            }
         }
         return root; // FIXME: check & see empty classRoot, OR null , invalid start. etc..
     }
@@ -74,13 +86,21 @@ public class JsonParser {
             var key = skipped.getStringValue();  // get the key
             eat(Token.TokenType.COLON); // TODO: Wire colon to key, As we have a key in object must have colon & Value;
             switch (currentToken.getTokenType()) {
-                case STRING -> object.push(new PropertyNode(key, new StringNode(currentToken.getStringValue())));
-                case BOOLEAN -> object.push(new PropertyNode(key, new BoolNode(currentToken.getStringValue())));
+                case STRING, BOOLEAN, NUMBER -> {
+                    var value =  ValueFactory.create(currentToken.getStringValue());
+                    object.push(new PropertyNode(key, value));
+                }
+
                 case L_BRACE -> {
                     advance();
                     object.push(new PropertyNode(key, parseObject()));
-                    eat(Token.TokenType.R_BRACE);
+                    eatNoAdvance(Token.TokenType.R_BRACE);
                 }
+//                case L_BRACKET -> {
+//                    advance();
+//                    object.push(new PropertyNode(key, parseArray()));
+//                    eat(Token.TokenType.R_BRACKET);
+//                }
                 default -> System.out.println("ValueError: Unexpected value type. Valid Value: (Boolean, String, Number, Object, Array)");
             }
             advance();
@@ -91,13 +111,17 @@ public class JsonParser {
     }
 
     private ArrayNode parseArray() {
-        // TODO: 7/13/21
-        return null;
+        var array = new ArrayNode();
+        while (true) {
+            switch (currentToken.getTokenType()) {
+                case STRING, BOOLEAN, NUMBER ->
+                    array.push(ValueFactory.create(currentToken.getStringValue()));
+            }
+            advance();
+            if (!consumeIf(Token.TokenType.COMMA)) break;
+        }
 
-    }
-
-    private void parseValue() {
-        // TODO: 7/17/21
+        return array;
     }
 
 
