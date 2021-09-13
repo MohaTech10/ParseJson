@@ -86,9 +86,11 @@ public class JsonParser {
             var key = skipped.getStringValue();  // get the key
             eat(Token.TokenType.COLON); // TODO: Wire colon to key, As we have a key in object must have colon & Value;
             switch (currentToken.getTokenType()) {
-                case STRING -> object.push(new PropertyNode(key, new StringNode(currentToken.getStringValue())));
-                case BOOLEAN -> object.push(new PropertyNode(key, new BoolNode(currentToken.getStringValue())));
-                case NUMBER -> object.push(new PropertyNode(key, new NumberNode(currentToken.getStringValue())));
+                case STRING, BOOLEAN, NUMBER -> {
+                    var value =  ValueFactory.create(currentToken.getStringValue());
+                    object.push(new PropertyNode(key, value));
+                }
+
                 case L_BRACE -> {
                     advance();
                     object.push(new PropertyNode(key, parseObject()));
@@ -112,9 +114,8 @@ public class JsonParser {
         var array = new ArrayNode();
         while (true) {
             switch (currentToken.getTokenType()) {
-                case STRING -> array.push(new StringNode(currentToken.getStringValue()));
-                case BOOLEAN -> array.push(new BoolNode(currentToken.getStringValue()));
-                case NUMBER -> array.push(new NumberNode(currentToken.getStringValue()));
+                case STRING, BOOLEAN, NUMBER ->
+                    array.push(ValueFactory.create(currentToken.getStringValue()));
             }
             advance();
             if (!consumeIf(Token.TokenType.COMMA)) break;

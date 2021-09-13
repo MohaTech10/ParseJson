@@ -4,7 +4,7 @@ package code.ast;
 public class BoolNode extends ValueNode {
 
     String value;
-    public BoolNode(String value) {
+    protected BoolNode(String value) {
         super(ValueKind.BOOLEAN);
         this.value = value;
     }
