@@ -2,12 +2,9 @@ package code.ast;
 
 import code.visitor.ValueVisitor;
 
-public class NumberNode extends ValueNode {
-
-    String value;
-    protected NumberNode(String value) {
-        super(ValueKind.NUMBER);
-        this.value = value;
+public class NullNode extends ValueNode {
+    protected NullNode() {
+        super(ValueKind.NULL);
     }
 
     @Override

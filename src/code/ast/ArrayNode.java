@@ -1,9 +1,11 @@
 package code.ast;
 
+import code.visitor.ValueVisitor;
+
 import java.util.List;
 public class ArrayNode extends ValueNode implements JsonRoot<ValueNode> {
 
-    List<ValueNode> elements;
+    private List<ValueNode> elems;
 //    private boolean heterogeneous;  // Array of mix type, False by default;
 
     public ArrayNode() {
@@ -12,7 +14,17 @@ public class ArrayNode extends ValueNode implements JsonRoot<ValueNode> {
 
     @Override
     public boolean push(ValueNode element) {
-        return elements.add(element);
+        return elems.add(element);
+    }
+
+    @Override
+    public List<ValueNode> elements() {
+        return elems;
+    }
+
+    @Override
+    public ValueNode accept(ValueVisitor visitor) {
+        return visitor.visit(this);
     }
 
 //    public boolean isHeterogeneous() {
