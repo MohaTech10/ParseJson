@@ -1,6 +1,7 @@
 package code.parse;
 
 import code.ast.*;
+import code.jsonWriter.JsonValueWriter;
 import code.lexer.Token;
 import code.lexer.Tokenizer;
 
@@ -72,6 +73,7 @@ public class JsonParser {
                 eat(Token.TokenType.R_BRACKET);
             }
         }
+        JsonValueWriter.endJsonParsing(root);
         return root; // FIXME: check & see empty classRoot, OR null , invalid start. etc..
     }
 

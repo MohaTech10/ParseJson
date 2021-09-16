@@ -1,5 +1,7 @@
 package code.ast;
 
+import code.visitor.ValueVisitor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,19 +12,29 @@ public class ObjectNode extends ValueNode implements JsonRoot<PropertyNode> {
 
     /*ValueNode parent?*/
 
-    List<PropertyNode> elements;
+    private List<PropertyNode> elems;
 
     public ObjectNode() {
         super(ValueKind.OBJECT);
-        elements = new ArrayList<>();
+        elems = new ArrayList<>();
     }
 
-    public boolean push(PropertyNode element) { return elements.add(element); }
+    public boolean push(PropertyNode element) { return elems.add(element); }
+
+    @Override
+    public List<PropertyNode> elements() {
+        return elems;
+    }
 
     @Override
     public String toString() {
         return "ObjectNode{" +
-                "elements=" + elements +
+                "elements=" + elems +
                 '}';
+    }
+
+    @Override
+    public ValueNode accept(ValueVisitor visitor) {
+        return visitor.visit(this);
     }
 }

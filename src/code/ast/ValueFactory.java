@@ -7,7 +7,7 @@ public class ValueFactory {
     public static ValueNode create(/*ValueNode.ValueKind kind,*/ String value) {
 
         if (Utility.isNullString(value))
-            return new NullValue();
+            return new NullNode();
         else if (Utility.isBoolString(value))
             return new BoolNode(value);
         else if (Utility.isNumeric(value))
