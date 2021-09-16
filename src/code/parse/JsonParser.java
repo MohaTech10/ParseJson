@@ -79,9 +79,9 @@ public class JsonParser {
 
     // if object is null then empty one
     private ObjectNode parseObject() {
-
-        if (check(Token.TokenType.R_BRACE)) { return null; } // Empty case
         var object = new ObjectNode();
+
+        if (check(Token.TokenType.R_BRACE)) { return object; } // Empty case
 
         while (true) {
             eat(Token.TokenType.STRING);   // must have a key first in json
